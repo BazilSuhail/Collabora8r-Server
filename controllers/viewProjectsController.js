@@ -41,19 +41,12 @@ exports.getProjectDetails = async (req, res) => {
   }
 };
 
-// Get all users except the logged-in admin
-exports.fetchUsersExcludingAdmin = async (req, res) => {
+// Get all users
+exports.getAllUsers = async (req, res) => {
   try {
-    const userId = req.user ? req.user.id : null; // Ensure req.user is available
-
-    console.log('Fetching users excluding ID:', userId); // Log user ID
-
-    // Fetch all users except the logged-in admin
-    const users = await Profile.find(userId ? { _id: { $ne: userId } } : {}, 'email name');
-
-    res.status(200).json(users);
+      const users = await Profile.find(); // Fetch all users from the database
+      res.status(200).json(users); // Send the users as a JSON response
   } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Failed to fetch users' });
+      res.status(500).json({ message: 'Error fetching users', error });
   }
 };

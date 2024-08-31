@@ -13,6 +13,7 @@ router.get('/:projectId', authenticateUser, projectController.getProjectDetails)
 // router.post('/addUser', authenticateUser, projectController.addUserToProject);
 
 // Route to get all users except the logged-in admin (no authentication required)
-router.get('/fetchUsers', projectController.fetchUsersExcludingAdmin);
+
+router.get('/fetchUsers', projectController.getAllUsers);
 
 module.exports = router;

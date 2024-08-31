@@ -20,7 +20,12 @@ app.use(express.json());
 app.use('/profile', require('./routes/authRoutes'));
 
 app.use('/viewProjects', require('./routes/viewProjectsRoutes'));
-app.use('/fetchusers', require('./routes/fetchUsersRoutes'));
+
+app.use('/manageusers', require('./routes/fetchUsersRoutes'));
+
+
+app.use('/joinedprojects', require('./routes/getJoinedProjectRoutes'));
+
 
 app.use('/projects', require('./routes/projectRoutes'));
  
