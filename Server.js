@@ -27,6 +27,9 @@ app.use('/manageusers', require('./routes/fetchUsersRoutes'));
 app.use('/joinedprojects', require('./routes/getJoinedProjectRoutes'));
 
 
+app.use('/manageTasks', require('./routes/taskRoutes'));
+
+
 app.use('/projects', require('./routes/projectRoutes'));
  
 

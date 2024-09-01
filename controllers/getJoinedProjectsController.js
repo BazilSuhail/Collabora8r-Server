@@ -70,7 +70,7 @@ exports.getProjectDetails = async (req, res) => {
             Profile.findById(userId).select('name email')
         );
         const profiles = await Promise.all(profilePromises);
-console.log(profiles);
+        //console.log(profiles);
         // Handle the case where some profiles might not be found
         const profileMap = profiles.reduce((map, profile) => {
             if (profile) {

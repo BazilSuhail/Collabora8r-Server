@@ -1,4 +1,3 @@
-// models/Profile.js
 const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
@@ -36,7 +35,11 @@ const profileSchema = new mongoose.Schema({
   joinedProjects: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'JoinProject'
-  } // Reference to the JoinProject document
+  }, // Reference to the JoinProject document
+  assignedTasks: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Task'
+  }] // Array of task references
 });
 
 module.exports = mongoose.model('Profile', profileSchema);
