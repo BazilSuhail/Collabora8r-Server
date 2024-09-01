@@ -1,4 +1,3 @@
-// models/Project.js
 const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema({
@@ -34,19 +33,8 @@ const projectSchema = new mongoose.Schema({
   ],
   tasks: [
     {
-      taskId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Task'
-      },
-      assignedTo: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profile'
-      },
-      status: {
-        type: String,
-        enum: ['To Do', 'In Progress', 'Completed'],
-        default: 'To Do'
-      }
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Task'
     }
   ]
 });

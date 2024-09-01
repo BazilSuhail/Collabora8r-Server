@@ -2,55 +2,69 @@ const Task = require('../models/tasks');
 const Profile = require('../models/profile');
 const AssignedTask = require('../models/assignTasks');
 const Project = require('../models/projects');
+
 exports.createTask = async (req, res) => {
-    try {
-      const { title, description, status, priority, dueDate, assignedTo, projectId } = req.body;
-  
-      // Create a new task
-      const newTask = new Task({
-        title,
-        description,
-        status,
-        priority,
-        dueDate,
-        projectId
-      });
-  
-      const savedTask = await newTask.save();
-  
-      // Update the project with the new task
-      await Project.findByIdAndUpdate(projectId, {
-        $push: { tasks: savedTask._id }
-      });
-  
-      // Create or update AssignedTask document for the user
-      if (assignedTo) {
-        let assignedTask = await AssignedTask.findOne({ userId: assignedTo });
-  
-        if (!assignedTask) {
-          assignedTask = new AssignedTask({
-            userId: assignedTo,
-            assignTasks: [savedTask._id]
-          });
-        } else {
-          assignedTask.assignTasks.push(savedTask._id);
-        }
-  
-        await assignedTask.save();
-  
-        // Update the user's profile with the new task ID
-        await Profile.findByIdAndUpdate(assignedTo, {
-          $push: { assignedTasks: savedTask._id }
+  try {
+    const { title, description, status, priority, dueDate, assignedTo, projectId } = req.body;
+
+    // Create a new task
+    const newTask = new Task({
+      title,
+      description,
+      status,
+      priority,
+      assignedTo,
+      dueDate,
+      projectId
+    });
+
+    const savedTask = await newTask.save();
+
+    // Update the project with the new task ID
+    await Project.findByIdAndUpdate(projectId, {
+      $push: { tasks: savedTask._id }
+    });
+
+    // Create or update AssignedTask document for the user
+    if (assignedTo) {
+      let assignedTask = await AssignedTask.findOne({ userId: assignedTo });
+
+      if (!assignedTask) {
+        // Create a new AssignedTask document if it doesn't exist
+        assignedTask = new AssignedTask({
+          userId: assignedTo,
+          assignTasks: [savedTask._id]
         });
+        await assignedTask.save();
+
+        // Update the user's profile with the AssignedTask document's ID
+        await Profile.findByIdAndUpdate(assignedTo, {
+          $set: { assignedTasks: assignedTask._id }
+        });
+      } else {
+        // Add the new task ID to the existing AssignedTask document
+        assignedTask.assignTasks.push(savedTask._id);
+        await assignedTask.save();
+
+        // Check if the AssignedTask document's ID is already stored in the user's profile
+        const profile = await Profile.findById(assignedTo);
+        if (!profile.assignedTasks || !profile.assignedTasks.equals(assignedTask._id)) {
+          await Profile.findByIdAndUpdate(assignedTo, {
+            $set: { assignedTasks: assignedTask._id }
+          });
+        }
       }
-  
-      res.status(201).json(savedTask);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Failed to create task.' });
     }
-  };
-  
+
+    res.status(201).json(savedTask);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to create task.' });
+  }
+};
+
+
+
   exports.getTasksByProject = async (req, res) => {
     try {
       const { projectId } = req.params;

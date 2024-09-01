@@ -31,15 +31,15 @@ const profileSchema = new mongoose.Schema({
   adminProjects: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'AdminProject'
-  }, // Reference to the AdminProject document
+  }, 
   joinedProjects: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'JoinProject'
-  }, // Reference to the JoinProject document
-  assignedTasks: [{
+  },
+  assignedTasks: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Task'
-  }] // Array of task references
+  }
 });
 
 module.exports = mongoose.model('Profile', profileSchema);

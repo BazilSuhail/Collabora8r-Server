@@ -30,6 +30,9 @@ app.use('/joinedprojects', require('./routes/getJoinedProjectRoutes'));
 app.use('/manageTasks', require('./routes/taskRoutes'));
 
 
+app.use('/projecttasks', require('./routes/getProjectTasksRoutes'));
+
+
 app.use('/projects', require('./routes/projectRoutes'));
  
 
