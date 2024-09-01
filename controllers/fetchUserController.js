@@ -64,3 +64,4 @@ exports.addProjectToUser = async (req, res) => {
     res.status(500).json({ error: 'Failed to update user\'s joined projects.' });
   }
 };
+

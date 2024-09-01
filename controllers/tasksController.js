@@ -63,81 +63,110 @@ exports.createTask = async (req, res) => {
   }
 };
 
+exports.getTasksByProject = async (req, res) => {
+  try {
+    const { projectId } = req.params;
 
+    const tasks = await Task.find({ projectId }).populate('assignedTo', 'email'); // Populate user details
 
-  exports.getTasksByProject = async (req, res) => {
-    try {
-      const { projectId } = req.params;
-  
-      const tasks = await Task.find({ projectId }).populate('assignedTo', 'email'); // Populate user details
-  
-      res.status(200).json(tasks);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Failed to fetch tasks for the project.' });
+    res.status(200).json(tasks);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch tasks for the project.' });
+  }
+};
+
+exports.getTasksByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const assignedTasks = await AssignedTask.findOne({ userId }).populate('assignTasks');
+
+    res.status(200).json(assignedTasks);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch tasks for the user.' });
+  }
+};
+
+// Edit Task
+exports.editTask = async (req, res) => {
+  const { taskId } = req.params;
+  const { title, description, assignedTo } = req.body;
+
+  try {
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found.' });
     }
-  };
-  
-  exports.getTasksByUser = async (req, res) => {
-    try {
-      const { userId } = req.params;
-  
-      const assignedTasks = await AssignedTask.findOne({ userId }).populate('assignTasks');
-  
-      res.status(200).json(assignedTasks);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Failed to fetch tasks for the user.' });
+
+    const oldAssignTo = task.assignedTo;
+
+    // Update task details
+    task.title = title || task.title;
+    task.description = description || task.description;
+    task.assignedTo = assignedTo || task.assignedTo;
+    await task.save();
+
+    // If the task was reassigned to a different user
+    if (assignedTo && assignedTo !== oldAssignTo) {
+      // Remove task from old user's assigned tasks
+      const oldUserProfile = await Profile.findById(oldAssignTo);
+      if (oldUserProfile && oldUserProfile.assignedTasks) {
+        await AssignedTask.updateOne(
+          { _id: oldUserProfile.assignedTasks },
+          { $pull: { assignTasks: taskId } }
+        );
+      }
+
+      // Add task to new user's assigned tasks
+      const newUserProfile = await Profile.findById(assignedTo);
+      if (newUserProfile && newUserProfile.assignedTasks) {
+        await AssignedTask.updateOne(
+          { _id: newUserProfile.assignedTasks },
+          { $addToSet: { assignTasks: taskId } }
+        );
+      }
     }
-  };
-  
-  exports.updateTask = async (req, res) => {
-    try {
-      const { taskId } = req.params;
-      const updates = req.body;
-  
-      const updatedTask = await Task.findByIdAndUpdate(taskId, updates, { new: true });
-  
-      // Also update the assigned task details if necessary
-      await AssignedTask.updateMany(
-        { assignTasks: taskId },
-        { $set: { 'assignTasks.$': updatedTask._id } }
-      );
-  
-      res.status(200).json(updatedTask);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Failed to update task.' });
+
+    res.status(200).json({ message: 'Task updated successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update task.' });
+  }
+};
+
+// Delete Task
+exports.deleteTask = async (req, res) => {
+  const { taskId } = req.params;
+
+  try {
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found.' });
     }
-  };
-  
-  exports.deleteTask = async (req, res) => {
-    try {
-      const { taskId } = req.params;
-  
-      await Task.findByIdAndDelete(taskId);
-  
-      // Remove task from project
-      await Project.findOneAndUpdate(
-        { tasks: taskId },
-        { $pull: { tasks: taskId } }
-      );
-  
-      // Remove task from user
-      await Profile.updateMany(
-        { assignedTasks: taskId },
-        { $pull: { assignedTasks: taskId } }
-      );
-  
-      // Remove from AssignedTask collection
-      await AssignedTask.updateMany(
-        {},
+
+    // Remove task from assigned user's assigned tasks
+    const userProfile = await Profile.findById(task.assignedTo);
+    if (userProfile && userProfile.assignedTasks) {
+      await AssignedTask.updateOne(
+        { _id: userProfile.assignedTasks },
         { $pull: { assignTasks: taskId } }
       );
-  
-      res.status(200).json({ message: 'Task deleted successfully.' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Failed to delete task.' });
     }
-  };
+
+    // Remove task from the project
+    await Project.updateOne(
+      { _id: task.projectId },
+      { $pull: { tasks: taskId } }
+    );
+
+    // Finally, delete the task itself
+    await Task.deleteOne({ _id: taskId });
+
+    res.status(200).json({ message: 'Task deleted successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete task.' });
+  }
+};

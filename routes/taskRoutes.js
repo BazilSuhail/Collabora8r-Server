@@ -11,8 +11,8 @@ router.get('/project/:projectId', taskController.getTasksByProject);
 // Route to fetch tasks assigned to a specific user
 router.get('/user/:userId', taskController.getTasksByUser);
 
-// Route to update a task
-router.patch('/:taskId', taskController.updateTask);
+// Route to edit a task
+router.patch('/:taskId', taskController.editTask);
 
 // Route to delete a task
 router.delete('/:taskId', taskController.deleteTask);
