@@ -39,7 +39,12 @@ const taskSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
-  }
+  },
+  comments: [
+    {
+      type: String, // Store comment IDs as strings
+    },
+  ],
 });
 
 // Middleware to update `updatedAt` before save
