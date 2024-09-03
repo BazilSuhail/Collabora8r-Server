@@ -23,7 +23,6 @@ app.use('/viewProjects', require('./routes/viewProjectsRoutes'));
 
 app.use('/manageusers', require('./routes/fetchUsersRoutes'));
 
-
 app.use('/joinedprojects', require('./routes/getJoinedProjectRoutes'));
 
 

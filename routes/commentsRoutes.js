@@ -1,12 +1,14 @@
 const express = require('express');
-const { addCommentToTask, getCommentsForTask } = require('../controllers/commentsController');
+const { addCommentToTask, getCommentsForTask, editComment, deleteComment } = require('../controllers/commentsController');
 const router = express.Router();
-const authenticateUser = require('../middleware/authMiddleware'); // Middleware to authenticate user
+const authenticateUser = require('../middleware/authMiddleware');
 
 // Route to add a comment to a task
 router.post('/tasks/:taskId/comments', authenticateUser, addCommentToTask);
 
 // Route to get comments for a specific task
 router.get('/tasks/:taskId/comments', authenticateUser, getCommentsForTask);
+router.put('/:commentId', authenticateUser, editComment);
+router.delete('/:commentId', authenticateUser, deleteComment);
 
 module.exports = router;
