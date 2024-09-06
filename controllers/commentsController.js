@@ -27,10 +27,8 @@ exports.addCommentToTask = async (req, res) => {
 // Get comments for a specific task along with user details
 exports.getCommentsForTask = async (req, res) => {
   try {
-    const { taskId } = req.params;
-    console.log(taskId);
-
-    // Fetch the task by ID
+    const { taskId } = req.params; 
+    
     const task = await Task.findById(taskId).lean();
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
