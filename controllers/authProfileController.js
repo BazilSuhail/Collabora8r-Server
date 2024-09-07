@@ -76,15 +76,13 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
-
-// Update the current user's profile
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, gender, phone, email, dob, project } = req.body;
+    const { name, gender, phone, email, dob, avatar } = req.body; // Include avatar
 
     const updatedProfile = await Profile.findByIdAndUpdate(
       req.user.id,
-      { name, gender, phone, email, dob, project },
+      { name, gender, phone, email, dob, avatar }, // Update avatar
       { new: true, runValidators: true }
     );
 

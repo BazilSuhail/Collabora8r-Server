@@ -16,6 +16,7 @@ app.use(express.json());
 
 // Serve static files from the 'uploads' directory
  
+app.use('/overview', require('./routes/dashboardRoutes'));
 
 app.use('/profile', require('./routes/authRoutes'));
 
@@ -25,15 +26,11 @@ app.use('/manageusers', require('./routes/fetchUsersRoutes'));
 
 app.use('/joinedprojects', require('./routes/getJoinedProjectRoutes'));
 
-
 app.use('/manageTasks', require('./routes/taskRoutes'));
-
 
 app.use('/projecttasks', require('./routes/getProjectTasksRoutes'));
 
-
 app.use('/comments', require('./routes/commentsRoutes'));
-
 
 app.use('/projects', require('./routes/projectRoutes'));
  
