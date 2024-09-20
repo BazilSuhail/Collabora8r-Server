@@ -7,7 +7,6 @@ const path = require('path');
 
 const app = express();
 
-
 // Connect to database
 connectDB();
 
@@ -28,11 +27,14 @@ app.use('/joinedprojects', require('./routes/getJoinedProjectRoutes'));
 
 app.use('/manageTasks', require('./routes/taskRoutes'));
 
-app.use('/projecttasks', require('./routes/getProjectTasksRoutes'));
+app.use('/projecttasks', require('./routes/getUsersProjectTasksRoutes'));
 
 app.use('/comments', require('./routes/commentsRoutes'));
 
 app.use('/projects', require('./routes/projectRoutes'));
+
+
+app.use('/project-tasks', require('./routes/getProjectTasksRoutes'));
  
 
 const PORT = process.env.PORT || 5000;

@@ -1,9 +1,8 @@
 const express = require('express');
-const { getProjectTasks } = require('../controllers/getProjectTasksController');
-const protect  = require('../middleware/authMiddleware'); // Assuming you have an authentication middleware
-
 const router = express.Router();
+const { getProjectTasks } = require('../controllers/getProjectTasksController');
 
-router.get('/:projectId', protect, getProjectTasks);
+// GET /projects/:projectId/tasks
+router.get('/:projectId/tasks', getProjectTasks);
 
 module.exports = router;
