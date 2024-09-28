@@ -2,6 +2,7 @@ const Task = require('../models/tasks');
 const AssignedTask = require('../models/assignTasks');
 const Profile = require('../models/profile');
 const Project = require('../models/projects');
+
 exports.getProjectTasks = async (req, res) => {
     try {
         const { projectId } = req.params;

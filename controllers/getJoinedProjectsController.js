@@ -67,7 +67,7 @@ exports.getProjectDetails = async (req, res) => {
 
         // Fetch the profiles for the user IDs
         const profilePromises = userIds.map(userId =>
-            Profile.findById(userId).select('name email')
+            Profile.findById(userId).select('name email avatar')
         );
         const profiles = await Promise.all(profilePromises);
         //console.log(profiles);
@@ -85,7 +85,8 @@ exports.getProjectDetails = async (req, res) => {
             return {
                 ...member._doc,
                 name: profile ? profile.name : 'Name not found',
-                email: profile ? profile.email : 'Email not found'
+                email: profile ? profile.email : 'Email not found',
+                avatar: profile ? profile.avatar : 'Avatar not found'
             };
         });
 

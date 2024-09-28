@@ -34,6 +34,7 @@ app.use('/comments', require('./routes/commentsRoutes'));
 app.use('/projects', require('./routes/projectRoutes'));
 
 
+// will return a single task also
 app.use('/project-tasks', require('./routes/getProjectTasksRoutes'));
  
 

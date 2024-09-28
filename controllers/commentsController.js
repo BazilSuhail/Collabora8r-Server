@@ -1,6 +1,35 @@
 const Task = require('../models/tasks');
 const Comment = require('../models/comments');
+const Profile = require('../models/profile');
 
+// Get comments for a specific task along with user details
+exports.getCommentsForTask = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    const task = await Task.findById(taskId).lean();
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Fetch comments for the task
+    const comments = await Comment.find({ _id: { $in: task.comments } }).lean();
+
+    // Fetch user details for each comment
+    const commentsWithUserDetails = await Promise.all(comments.map(async (comment) => {
+      const user = await Profile.findById(comment.userId, 'name email avatar').lean();
+      return {
+        ...comment,
+        user: user || { name: 'Unknown', email: 'N/A', avatar: null }, // Fallback if user not found
+      };
+    }));
+
+    res.status(200).json({ comments: commentsWithUserDetails });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch task comments' });
+  }
+};
 exports.addCommentToTask = async (req, res) => {
   const { taskId } = req.params;
   const { content, userId } = req.body;
@@ -23,29 +52,6 @@ exports.addCommentToTask = async (req, res) => {
     res.status(500).json({ error: 'Failed to add comment.' });
   }
 };
-
-// Get comments for a specific task along with user details
-exports.getCommentsForTask = async (req, res) => {
-  try {
-    const { taskId } = req.params; 
-    
-    const task = await Task.findById(taskId).lean();
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
-    }
-
-    // Fetch comments for the task and populate user details
-    const comments = await Comment.find({ _id: { $in: task.comments } })
-      .populate('userId', 'name email') // Assuming the comment schema has a `userId` field
-      .lean();
-
-    res.status(200).json({ comments });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to fetch task comments' });
-  }
-};
-
 
 // Edit a comment
 exports.editComment = async (req, res) => {

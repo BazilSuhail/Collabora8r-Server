@@ -43,3 +43,20 @@ exports.getProjectTasks = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.getTaskDetails = async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    res.json(task);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
