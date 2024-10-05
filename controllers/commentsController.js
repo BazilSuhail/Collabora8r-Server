@@ -96,3 +96,22 @@ exports.deleteComment = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete comment.' });
   }
 };
+
+// Controller to get the name of the user by ID
+exports.getProjectCreatorName = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find the profile by ID and return only the 'name' field
+    const profile = await Profile.findById(id).select('name');
+
+    if (!profile) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({ name: profile.name });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};

@@ -1,5 +1,5 @@
 const express = require('express');
-const { addCommentToTask, getCommentsForTask, editComment, deleteComment } = require('../controllers/commentsController');
+const { addCommentToTask, getCommentsForTask, editComment, deleteComment, getProjectCreatorName } = require('../controllers/commentsController');
 const router = express.Router();
 const authenticateUser = require('../middleware/authMiddleware');
 
@@ -10,5 +10,6 @@ router.post('/tasks/:taskId/comments', authenticateUser, addCommentToTask);
 router.get('/tasks/:taskId/comments', authenticateUser, getCommentsForTask);
 router.put('/:commentId', authenticateUser, editComment);
 router.delete('/:commentId', authenticateUser, deleteComment);
+router.get('/:id/name',getProjectCreatorName);
 
 module.exports = router;
