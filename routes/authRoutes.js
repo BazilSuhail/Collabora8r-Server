@@ -7,6 +7,9 @@ const authMiddleware = require('../middleware/authMiddleware');
 // Sign Up a new user
 router.post('/signup', profileController.signUp);
 
+router.post('/check-email', profileController.checkEmailExists);
+router.post('/reset-password', profileController.resetPassword);
+router.post('/forgot-password', profileController.forgotPassword);
 // Sign In an existing user
 router.post('/signin', profileController.signIn);
 

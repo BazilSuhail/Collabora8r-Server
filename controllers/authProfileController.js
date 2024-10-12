@@ -63,6 +63,69 @@ exports.signIn = async (req, res) => {
   }
 };
 
+// Check if email exists
+exports.checkEmailExists = async (req, res) => {
+  const { email } = req.body; // Get email from the request body
+
+  try {
+    const profile = await Profile.findOne({ email });
+
+    if (profile) { 
+      return res.status(400).json({ exists: true, message: 'Email already registered' });
+    } else {
+      return res.status(200).json({ exists: false, message: 'Email is available' });
+    }
+  } catch (error) {
+    console.error('Error checking email:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;  
+  try { 
+    const profile = await Profile.findOne({ email });
+
+    if (profile) { 
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Password reset instructions have been sent to your email.' 
+      });
+    } else { 
+      return res.status(400).json({ 
+        success: false, 
+        message: 'No account found with that email address.' 
+      });
+    }
+  } catch (error) {
+    console.error('Error during forgot password process:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Update User Password
+exports.resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    // Find the user by email
+    const profile = await Profile.findOne({ email });
+    if (!profile) {
+      return res.status(400).json({ error: 'User does not exist' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the password
+    profile.password = hashedPassword;
+    await profile.save();
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 // Get the current user's profile
 exports.getProfile = async (req, res) => {
   try {
@@ -76,6 +139,7 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 exports.updateProfile = async (req, res) => {
   try {
     const { name, gender, phone, email, dob, avatar } = req.body; // Include avatar
