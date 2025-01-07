@@ -1,15 +1,17 @@
 const express = require('express');
-const connectDB = require('./Config/db');
-const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 const cors = require('cors');
-require('dotenv').config();
+const connectDB = require('./Config/db');  
 const path = require('path');
+const http = require('http');
+const { initSocket } = require('./socket');
 
+dotenv.config();
+connectDB();
 const app = express();
 
-// Connect to database
-connectDB();
-
+const server = http.createServer(app);
+initSocket(server); 
 app.use(cors());
 app.use(express.json());
 
@@ -39,4 +41,5 @@ app.use('/project-tasks', require('./routes/getProjectTasksRoutes'));
  
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Scoket Server running on port ${PORT}`));
+//app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
