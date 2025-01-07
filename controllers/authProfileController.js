@@ -43,6 +43,7 @@ exports.signIn = async (req, res) => {
 
   try {
     const profile = await Profile.findOne({ email });
+    console.log("start")
     if (!profile) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
@@ -55,6 +56,7 @@ exports.signIn = async (req, res) => {
     const token = jwt.sign({ id: profile._id }, process.env.JWT_SECRET, {
       expiresIn: '1h'
     });
+    console.log("finish")
 
     res.json({ token });
   } catch (error) {
