@@ -1,19 +1,16 @@
-// models/AdminProject.js
 const mongoose = require('mongoose');
 
 const adminProjectSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Profile',
+  _id: {
+    type: mongoose.Schema.Types.ObjectId, // Same ID as the user's Profile document
     required: true,
-    unique: true // Each user can only have one AdminProject document
   },
   projects: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Project'
-    }
-  ] // Array of project IDs created by the user
+      ref: 'Project',
+    },
+  ],
 });
 
 module.exports = mongoose.model('AdminProject', adminProjectSchema);
