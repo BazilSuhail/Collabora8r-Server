@@ -3,6 +3,7 @@ const Profile = require('../models/profile');
 const Project = require('../models/projects');
 const AdminProject = require('../models/adminProjects');
 const JoinProject = require('../models/joinProjects');
+const Notification = require('../models/notifications');
 
 // Create a new project
 exports.createProject = async (req, res) => {
@@ -11,20 +12,23 @@ exports.createProject = async (req, res) => {
 
   try {
     // Create a new Project document with a pending project manager
+    let projectManager = {
+      email: projectManagerEmail,
+      status: 'Pending',
+    };
+
+    // Create a new Project document
     const newProject = new Project({
       name,
       description,
       createdBy,
-      projectManager: {
-        email: projectManagerEmail,
-        status: 'Pending',
-      },
+      projectManager,
     });
 
     await newProject.save();
 
-    // Find or create the AdminProject document
-    let adminProject = await AdminProject.findOne({ userId: createdBy });
+    // Find the AdminProject document using createdBy (userId)
+    let adminProject = await AdminProject.findById(createdBy);  // Use findById with createdBy
 
     if (!adminProject) {
       adminProject = new AdminProject({ userId: createdBy, projects: [] });
@@ -34,24 +38,68 @@ exports.createProject = async (req, res) => {
     adminProject.projects.push(newProject._id);
     await adminProject.save();
 
-    // Update the admin's profile with the AdminProject document ID
-    const adminProfile = await Profile.findById(createdBy);
-    if (!adminProfile) {
-      return res.status(404).json({ error: 'Admin profile not found' });
+    // Find the project manager by email in the Profile collection
+    const projectManagerProfile = await Profile.findOne({ email: projectManagerEmail });
+
+    // If project manager exists, update projectManager with their ID
+    if (projectManagerProfile) {
+      // Update project manager status
+      projectManager.status = 'Pending';
+
+      // Find the notification document for the project manager
+      const notificationDoc = await Notification.findById(projectManagerProfile._id);
+
+      // If notification document exists, add the notification
+      if (notificationDoc) {
+        notificationDoc.notifications.push({
+          title: 'New Project Assignment',
+          description: `You have been assigned as a project manager for ${name}`,
+          isLink: false,
+          link: '',
+          from: createdBy, // Admin who created the project
+        });
+
+        await notificationDoc.save();
+      } else {
+        // If no notification document exists, create a new one
+        const newNotification = new Notification({
+          _id: projectManagerProfile._id,
+          notifications: [
+            {
+              title: 'New Project Assignment',
+              description: `You have been assigned as a project manager for ${name}`,
+              isLink: false,
+              link: '',
+              from: createdBy,
+            },
+          ],
+        });
+
+        await newNotification.save();
+      }
+
+      // Update the projectManager with the found Profile's ID
+      projectManager.id = projectManagerProfile._id;
+    } else {
+      // If project manager does not exist, set email to empty string
+      projectManager.email = '';
     }
 
-    adminProfile.adminProjects = adminProject._id;
-    await adminProfile.save();
+    // Save the updated project with the project manager info
+    await newProject.save();
 
-    // Send a notification or email to the project manager
-    //sendProjectManagerNotification(projectManagerEmail, newProject._id);
-
-    res.status(201).json({ message: 'Project created successfully!', project: newProject });
+    // Respond with success message
+    res.status(201).json({
+      message: 'Project created successfully!',
+      project: newProject,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+
 /*exports.createProject = async (req, res) => {
   const { name, description, projectManager } = req.body;
   const createdBy = req.user.id; // Admin user ID

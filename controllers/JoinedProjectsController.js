@@ -18,7 +18,7 @@ exports.getJoinedProjects = async (req, res) => {
         const joinProjectDoc = await JoinProject.findById(profile.joinedProjects);
 
         if (!joinProjectDoc) {
-            return res.status(404).json({ error: 'No joined projects found for this user.' });
+            return res.status(404).json({ error: 'N sa  o joined projects found for this user.' });
         }
 
         // Fetch all projects using the project IDs stored in the joinProjectDoc.projects array

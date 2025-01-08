@@ -57,6 +57,13 @@ exports.signUp = async (req, res) => {
     });
     await joinProject.save();
 
+    // Create Notification document
+    const notification = new Notification({
+      _id: userId,
+      notifications: [], // Initialize with an empty notifications array
+    });
+    await notification.save();
+
     // Generate a JWT token
     const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
       expiresIn: '1h',
@@ -69,6 +76,7 @@ exports.signUp = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 
 // Sign In an existing user
