@@ -17,27 +17,27 @@ app.use(express.json());
 
 // Serve static files from the 'uploads' directory
  
-app.use('/overview', require('./routes/dashboardRoutes'));
+app.use('/overview', require('./routes/DashboardRoutes'));
 
-app.use('/profile', require('./routes/authRoutes'));
+app.use('/profile', require('./routes/AuthRoutes'));
 
-app.use('/viewProjects', require('./routes/viewProjectsRoutes'));
+app.use('/viewProjects', require('./routes/AdminProjectRoutes'));
 
-app.use('/manageusers', require('./routes/fetchUsersRoutes'));
+app.use('/manageusers', require('./routes/FetchUsersRoutes'));
 
-app.use('/joinedprojects', require('./routes/getJoinedProjectRoutes'));
+app.use('/joinedprojects', require('./routes/JoinedProjectRoutes'));
 
-app.use('/manageTasks', require('./routes/taskRoutes'));
+app.use('/manageTasks', require('./routes/TaskRoutes'));
 
-app.use('/projecttasks', require('./routes/getUsersProjectTasksRoutes'));
+app.use('/projecttasks', require('./routes/UsersProjectTasksRoutes'));
 
-app.use('/comments', require('./routes/commentsRoutes'));
+app.use('/comments', require('./routes/CommentsRoutes'));
 
-app.use('/projects', require('./routes/projectRoutes'));
+app.use('/projects', require('./routes/ProjectRoutes'));
 
 
 // will return a single task also
-app.use('/project-tasks', require('./routes/getProjectTasksRoutes'));
+app.use('/project-tasks', require('./routes/ProjectTasksRoutes'));
  
 
 const PORT = process.env.PORT || 3001;

@@ -6,6 +6,53 @@ const JoinProject = require('../models/joinProjects');
 
 // Create a new project
 exports.createProject = async (req, res) => {
+  const { name, description, projectManagerEmail } = req.body; // Use email instead of direct reference
+  const createdBy = req.user.id; // Admin user ID
+
+  try {
+    // Create a new Project document with a pending project manager
+    const newProject = new Project({
+      name,
+      description,
+      createdBy,
+      projectManager: {
+        email: projectManagerEmail,
+        status: 'Pending',
+      },
+    });
+
+    await newProject.save();
+
+    // Find or create the AdminProject document
+    let adminProject = await AdminProject.findOne({ userId: createdBy });
+
+    if (!adminProject) {
+      adminProject = new AdminProject({ userId: createdBy, projects: [] });
+    }
+
+    // Add the project ID to the AdminProject document
+    adminProject.projects.push(newProject._id);
+    await adminProject.save();
+
+    // Update the admin's profile with the AdminProject document ID
+    const adminProfile = await Profile.findById(createdBy);
+    if (!adminProfile) {
+      return res.status(404).json({ error: 'Admin profile not found' });
+    }
+
+    adminProfile.adminProjects = adminProject._id;
+    await adminProfile.save();
+
+    // Send a notification or email to the project manager
+    //sendProjectManagerNotification(projectManagerEmail, newProject._id);
+
+    res.status(201).json({ message: 'Project created successfully!', project: newProject });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+/*exports.createProject = async (req, res) => {
   const { name, description, projectManager } = req.body;
   const createdBy = req.user.id; // Admin user ID
 
@@ -45,7 +92,7 @@ exports.createProject = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
-
+*/
 // Join an existing project
 exports.joinProject = async (req, res) => {
   const { projectId } = req.body; // Project ID to join

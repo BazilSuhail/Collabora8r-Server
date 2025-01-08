@@ -14,9 +14,19 @@ const projectSchema = new mongoose.Schema({
     required: true
   },
   projectManager: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Profile',
-    required: true
+    managerProfile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Profile'
+    },
+    email: {
+      type: String, // Store the email initially
+      required: true
+    },
+    status: {
+      type: String,
+      enum: ['Pending', 'Approved', 'Rejected'], // Status of the project manager
+      default: 'Pending'
+    }
   },
   team: [
     {
