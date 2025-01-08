@@ -2,34 +2,67 @@
 const Profile = require('../models/profile');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const AssignedTask = require('../models/assignTasks');
+const AdminProject = require('../models/adminProjects');
+const JoinProject = require('../models/joinProjects');
 
+// Sign Up a new user
 // Sign Up a new user
 exports.signUp = async (req, res) => {
   const { name, gender, phone, email, dob, password } = req.body;
-  
+
   try {
+    // Check if the user already exists
     let profile = await Profile.findOne({ email });
     if (profile) {
       return res.status(400).json({ error: 'User already exists' });
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create the user's Profile document
     profile = new Profile({
       name,
       gender,
       phone,
       email,
       dob,
-      password: hashedPassword // Store the hashed password
+      password: hashedPassword, // Store the hashed password
     });
 
     await profile.save();
 
-    const token = jwt.sign({ id: profile._id }, process.env.JWT_SECRET, {
-      expiresIn: '1h'
+    // Use the same _id from Profile to create documents in the other collections
+    const userId = profile._id;
+
+    // Create AssignedTask document
+    const assignedTask = new AssignedTask({
+      _id: userId,
+      assignTasks: [], // Initialize with an empty task array
+    });
+    await assignedTask.save();
+
+    // Create AdminProject document
+    const adminProject = new AdminProject({
+      _id: userId,
+      projects: [], // Initialize with an empty project array
+    });
+    await adminProject.save();
+
+    // Create JoinProject document
+    const joinProject = new JoinProject({
+      _id: userId,
+      projects: [], // Initialize with an empty project array
+    });
+    await joinProject.save();
+
+    // Generate a JWT token
+    const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
     });
 
+    // Respond with the token
     res.status(201).json({ token });
   } catch (error) {
     console.error(error); // Log the error for debugging
@@ -37,13 +70,14 @@ exports.signUp = async (req, res) => {
   }
 };
 
+
 // Sign In an existing user
 exports.signIn = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const profile = await Profile.findOne({ email });
-   
+
     if (!profile) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
@@ -56,7 +90,7 @@ exports.signIn = async (req, res) => {
     const token = jwt.sign({ id: profile._id }, process.env.JWT_SECRET, {
       expiresIn: '1h'
     });
-    
+
 
     res.json({ token });
   } catch (error) {
@@ -72,7 +106,7 @@ exports.checkEmailExists = async (req, res) => {
   try {
     const profile = await Profile.findOne({ email });
 
-    if (profile) { 
+    if (profile) {
       return res.status(400).json({ exists: true, message: 'Email already registered' });
     } else {
       return res.status(200).json({ exists: false, message: 'Email is available' });
@@ -83,19 +117,19 @@ exports.checkEmailExists = async (req, res) => {
   }
 };
 exports.forgotPassword = async (req, res) => {
-  const { email } = req.body;  
-  try { 
+  const { email } = req.body;
+  try {
     const profile = await Profile.findOne({ email });
 
-    if (profile) { 
-      return res.status(200).json({ 
-        success: true, 
-        message: 'Password reset instructions have been sent to your email.' 
+    if (profile) {
+      return res.status(200).json({
+        success: true,
+        message: 'Password reset instructions have been sent to your email.'
       });
-    } else { 
-      return res.status(400).json({ 
-        success: false, 
-        message: 'No account found with that email address.' 
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'No account found with that email address.'
       });
     }
   } catch (error) {
