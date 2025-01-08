@@ -10,7 +10,6 @@ router.get('/', authenticateUser, projectController.getJoinedProjects);
 // Route to get details of a specific project
 router.get('/:projectId', authenticateUser, projectController.getProjectDetails);
 
-
 // Route to fetch team members for a project
 router.get('/:projectId/team', projectController.getTeamMembers);
 

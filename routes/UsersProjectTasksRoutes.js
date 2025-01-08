@@ -1,6 +1,6 @@
 const express = require('express');
-const { getProjectTasks,updateTaskStatus } = require('../controllers/UsersProjectTasksController');
-const protect  = require('../middleware/authMiddleware'); // Assuming you have an authentication middleware
+const { getProjectTasks, updateTaskStatus } = require('../controllers/UsersProjectTasksController');
+const protect = require('../middleware/authMiddleware'); // Assuming you have an authentication middleware
 
 const router = express.Router();
 

@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const AssignedTask = require('../models/assignTasks');
 const AdminProject = require('../models/adminProjects');
 const JoinProject = require('../models/joinProjects');
+const Notification = require('../models/notifications');
 
 // Sign Up a new user
 // Sign Up a new user

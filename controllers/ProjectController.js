@@ -52,12 +52,17 @@ exports.createProject = async (req, res) => {
       // If notification document exists, add the notification
       if (notificationDoc) {
         notificationDoc.notifications.push({
-          title: 'New Project Assignment',
-          description: `You have been assigned as a project manager for ${name}`,
-          isLink: false,
-          link: '',
-          from: createdBy, // Admin who created the project
+          type: "projectManager",  
+          data: {
+            title: 'New Project Assignment',
+            description: `You have been assigned as a project manager for ${name}`,
+            isLink: false,
+            link: '',
+            from: createdBy, // Admin who created the project
+            createdAt: Date.now(), // Add createdAt inside data
+          },
         });
+        
 
         await notificationDoc.save();
       } else {
@@ -66,12 +71,16 @@ exports.createProject = async (req, res) => {
           _id: projectManagerProfile._id,
           notifications: [
             {
-              title: 'New Project Assignment',
-              description: `You have been assigned as a project manager for ${name}`,
-              isLink: false,
-              link: '',
-              from: createdBy,
-            },
+              type: "projectManager",  
+              data: {
+                title: 'New Project Assignment',
+                description: `You have been assigned as a project manager for ${name}`,
+                isLink: false,
+                link: '',
+                from: createdBy, // Admin who created the project
+                createdAt: Date.now(), // Add createdAt inside data
+              },
+            }
           ],
         });
 

@@ -2,20 +2,21 @@ const Project = require('../models/projects');
 const Profile = require('../models/profile');
 const JoinProject = require('../models/joinProjects');
 
+
 // Fetch projects joined by a user
 exports.getJoinedProjects = async (req, res) => {
     try {
         const userId = req.user.id; // This comes from the authenticateUser middleware 
 
         // Fetch the profile of the logged-in user
-        const profile = await Profile.findById(userId).populate('joinedProjects');
+        /*const profile = await Profile.findById(userId).populate('joinedProjects');
 
         if (!profile) {
             return res.status(404).json({ error: 'Profile not found' });
         }
-
+*/
         // Fetch the JoinProject document referenced in profile.joinedProjects
-        const joinProjectDoc = await JoinProject.findById(profile.joinedProjects);
+        const joinProjectDoc = await JoinProject.findById(userId);
 
         if (!joinProjectDoc) {
             return res.status(404).json({ error: 'N sa  o joined projects found for this user.' });
@@ -52,44 +53,33 @@ exports.getProjectDetails = async (req, res) => {
             });
         }
 
-        // Extract user IDs from the project team array
-        const userIds = project.team
-            .map(member => member.userId)
-            .filter(userId => userId);
-
-        // Check if userIds array is empty
-        if (userIds.length === 0) {
-            return res.status(200).json({
-                project,
-                teamDetails: 'No valid user IDs found in the project team.'
-            });
-        }
-
-        // Fetch the profiles for the user IDs
-        const profilePromises = userIds.map(userId =>
+        // Fetch profiles one by one using findById
+        const profilePromises = project.team.map(userId =>
             Profile.findById(userId).select('name email avatar')
         );
+        
+
+        // Resolve all promises
         const profiles = await Promise.all(profilePromises);
-        //console.log(profiles);
-        // Handle the case where some profiles might not be found
+
+        // Map profiles to their IDs for quick lookup
         const profileMap = profiles.reduce((map, profile) => {
-            if (profile) {
+            if (profile) { // Ensure profile is not null
                 map[profile._id.toString()] = profile;
             }
             return map;
         }, {});
-
-        // Combine the project data with the fetched team member details
-        const populatedTeam = project.team.map(member => {
-            const profile = profileMap[member.userId.toString()];
+        const populatedTeam = project.team.map(userId => {
+            const profile = profileMap[userId.toString()];
             return {
-                ...member._doc,
+                _id: userId,
                 name: profile ? profile.name : 'Name not found',
                 email: profile ? profile.email : 'Email not found',
                 avatar: profile ? profile.avatar : 'Avatar not found'
             };
         });
 
+        //console.log(populatedTeam)
         res.status(200).json({
             project: {
                 ...project._doc,
@@ -101,9 +91,6 @@ exports.getProjectDetails = async (req, res) => {
         res.status(500).json({ error: 'Server error while fetching project details' });
     }
 };
-
-
-
 
 // Fetch team members for a project
 exports.getTeamMembers = async (req, res) => {
