@@ -6,11 +6,6 @@ const authenticateUser  = require('../middleware/authMiddleware');
 
 // Route to create a new project (only accessible to authenticated users)
 router.post('/create', authenticateUser, projectController.createProject);
-
-// Route to join an existing project (only accessible to authenticated users)
-router.post('/join', authenticateUser, projectController.joinProject);
-
-// Route to get all users (for selecting a project manager)
-router.get('/users', authenticateUser, projectController.getAllUsers); // Ensure authentication
+router.put('/:projectId/update', authenticateUser, projectController.updateProject);    
 
 module.exports = router;
