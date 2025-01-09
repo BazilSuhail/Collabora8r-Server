@@ -1,19 +1,38 @@
-const Profile = require('../models/profile'); // Adjust the path as needed
-const Project = require('../models/projects'); // Adjust the path as needed 
-const JoinProject = require('../models/joinProjects');
-const Notification = require('../models/notifications');
+const Profile = require('../models/profile')
+const Project = require('../models/projects') 
+const JoinProject = require('../models/joinProjects')
+const Notification = require('../models/notifications')
 
-// Get all users
-exports.getAllUsers = async (req, res) => {
+// Get all users from a project's team
+exports.getAllUsersFromProject = async (req, res) => {
   try {
-    // Fetch all users names from the database
-    const users = await Profile.find().select('email avatar name');
-    res.status(200).json(users);
-  }
+    const { projectId } = req.params;
+    console.log(projectId)
+    if (!projectId) {
+      return res.status(400).json({ message: 'Project ID is required' });
+    }
+
+    const project = await Project.findById(projectId).select('team');
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+    
+    const teamIds = project.team;
+    const users = await Promise.all(
+      teamIds.map(async (profileId) => {
+        const user = await Profile.findById(profileId).select('email avatar name');
+        return user || null;
+      })
+    );
+    const filteredUsers = users.filter((user) => user !== null);
+
+    res.status(200).json(filteredUsers);
+  } 
   catch (error) {
     res.status(500).json({ message: 'Error fetching users', error });
   }
 };
+
 
 exports.addUserToProjectInvitation = async (req, res) => {
   //const { projectId } = req.params;
@@ -71,11 +90,10 @@ exports.getProjectWithUserDetails = async (req, res) => {
 };
 
 exports.acceptProjectInvite = async (req, res) => {
-  const userId = req.user.id; // User ID from middleware
-  const { projectId } = req.body; // Project ID from request body
+  const userId = req.user.id;
+  const { projectId } = req.body;
 
   try {
-    // Find the project by ID
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ error: 'Project not found.' });
@@ -93,14 +111,14 @@ exports.acceptProjectInvite = async (req, res) => {
     if (!joinProject) {
       joinProject = new JoinProject({ userId, projects: [projectId] });
       await joinProject.save();
-    } 
+    }
     else if (!joinProject.projects.includes(projectId)) {
       joinProject.projects.push(projectId);
       await joinProject.save();
     }
 
     res.status(200).json({ message: 'Project invitation accepted successfully.' });
-  } 
+  }
   catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to accept project invitation.' });

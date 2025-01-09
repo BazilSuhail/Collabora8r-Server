@@ -6,8 +6,6 @@ const Project = require('../models/projects');
 exports.createTask = async (req, res) => {
   try {
     const { title, description, status, priority, dueDate, assignedTo, projectId } = req.body;
-
-    // Create a new task
     const newTask = new Task({
       title,
       description,
@@ -19,16 +17,17 @@ exports.createTask = async (req, res) => {
     });
 
     const savedTask = await newTask.save();
+    //console.log(savedTask)
 
-    // Update the project with the new task ID
     await Project.findByIdAndUpdate(projectId, {
       $push: { tasks: savedTask._id }
     });
 
     // Create or update AssignedTask document for the user
     if (assignedTo) {
-      let assignedTask = await AssignedTask.findOne({ userId: assignedTo });
+      let assignedTask = await AssignedTask.findById(assignedTo);
 
+      console.log(savedTask._id)
       if (!assignedTask) {
         // Create a new AssignedTask document if it doesn't exist
         assignedTask = new AssignedTask({
@@ -41,7 +40,8 @@ exports.createTask = async (req, res) => {
         await Profile.findByIdAndUpdate(assignedTo, {
           $set: { assignedTasks: assignedTask._id }
         });
-      } else {
+      }
+      else {
         // Add the new task ID to the existing AssignedTask document
         assignedTask.assignTasks.push(savedTask._id);
         await assignedTask.save();
@@ -67,7 +67,7 @@ exports.getTasksByProject = async (req, res) => {
   try {
     const { projectId } = req.params;
 
-    const tasks = await Task.find({ projectId }).populate('assignedTo', 'email'); // Populate user details
+    const tasks = await Task.find({ projectId }).populate('assignedTo', 'email');
 
     res.status(200).json(tasks);
   } catch (err) {
@@ -147,25 +147,24 @@ exports.deleteTask = async (req, res) => {
     }
 
     // Remove task from assigned user's assigned tasks
-    const userProfile = await Profile.findById(task.assignedTo);
-    if (userProfile && userProfile.assignedTasks) {
-      await AssignedTask.updateOne(
-        { _id: userProfile.assignedTasks },
-        { $pull: { assignTasks: taskId } }
-      );
-    }
+    await AssignedTask.findByIdAndUpdate(
+      task.assignedTo, // Assuming `task.assignedTo` is the _id of the AssignedTask document
+      { $pull: { assignTasks: taskId } },
+      { new: true } // Return the updated document
+    );
 
-    // Remove task from the project
-    await Project.updateOne(
-      { _id: task.projectId },
-      { $pull: { tasks: taskId } }
+    await Project.findByIdAndUpdate(
+      task.projectId,
+      { $pull: { tasks: taskId } },
     );
 
     // Finally, delete the task itself
-    await Task.deleteOne({ _id: taskId });
+    await Task.findByIdAndDelete(taskId);
+    //await Task.deleteOne({ _id: taskId });
 
     res.status(200).json({ message: 'Task deleted successfully.' });
-  } catch (err) {
+  }
+  catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to delete task.' });
   }

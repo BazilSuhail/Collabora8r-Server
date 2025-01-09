@@ -11,6 +11,6 @@ router.get('/', authenticateUser, projectController.getJoinedProjects);
 router.get('/:projectId', authenticateUser, projectController.getProjectDetails);
 
 // Route to fetch team members for a project
-router.get('/:projectId/team', projectController.getTeamMembers);
+//router.get('/:projectId/team', projectController.getTeamMembers);
 
 module.exports = router;
