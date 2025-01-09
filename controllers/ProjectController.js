@@ -7,7 +7,7 @@ const Notification = require('../models/notifications');
 
 // Create a new project
 exports.createProject = async (req, res) => {
-  const { name, description, projectManagerEmail } = req.body; // Use email instead of direct reference
+  const { name, description, projectManagerEmail,theme } = req.body; // Use email instead of direct reference
   const createdBy = req.user.id; // Admin user ID
 
   try {
@@ -20,6 +20,7 @@ exports.createProject = async (req, res) => {
     // Create a new Project document
     const newProject = new Project({
       name,
+      theme,
       description,
       createdBy,
       projectManager,
@@ -28,7 +29,7 @@ exports.createProject = async (req, res) => {
     await newProject.save();
 
     // Find the AdminProject document using createdBy (userId)
-    let adminProject = await AdminProject.findById(createdBy);  // Use findById with createdBy
+    let adminProject = await AdminProject.findById(createdBy);
 
     if (!adminProject) {
       adminProject = new AdminProject({ userId: createdBy, projects: [] });
@@ -43,7 +44,6 @@ exports.createProject = async (req, res) => {
 
     // If project manager exists, update projectManager with their ID
     if (projectManagerProfile) {
-      // Update project manager status
       projectManager.status = 'Pending';
 
       // Find the notification document for the project manager

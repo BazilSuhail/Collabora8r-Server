@@ -8,6 +8,10 @@ router.get('/', authenticateUser, projectController.getCreatedProjects);
 
 // Route to get details of a specific project
 router.get('/:projectId', authenticateUser, projectController.getProjectDetails);
+router.post('/get-searched-user', authenticateUser, projectController.searchUserByEmail);
 
+
+// Route to add a user to a project
+router.post('/send-project-invitation',authenticateUser, projectController.addUserToProjectInvitation);
 
 module.exports = router;

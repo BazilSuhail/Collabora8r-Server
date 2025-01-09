@@ -17,36 +17,31 @@ exports.createTask = async (req, res) => {
     });
 
     const savedTask = await newTask.save();
-    //console.log(savedTask)
 
     await Project.findByIdAndUpdate(projectId, {
       $push: { tasks: savedTask._id }
     });
 
-    // Create or update AssignedTask document for the user
+    // Create/ update AssignedTask document for the user
     if (assignedTo) {
       let assignedTask = await AssignedTask.findById(assignedTo);
 
       console.log(savedTask._id)
       if (!assignedTask) {
-        // Create a new AssignedTask document if it doesn't exist
         assignedTask = new AssignedTask({
           userId: assignedTo,
           assignTasks: [savedTask._id]
         });
         await assignedTask.save();
 
-        // Update the user's profile with the AssignedTask document's ID
         await Profile.findByIdAndUpdate(assignedTo, {
           $set: { assignedTasks: assignedTask._id }
         });
       }
       else {
-        // Add the new task ID to the existing AssignedTask document
         assignedTask.assignTasks.push(savedTask._id);
         await assignedTask.save();
-
-        // Check if the AssignedTask document's ID is already stored in the user's profile
+        
         const profile = await Profile.findById(assignedTo);
         if (!profile.assignedTasks || !profile.assignedTasks.equals(assignedTask._id)) {
           await Profile.findByIdAndUpdate(assignedTo, {
@@ -67,14 +62,36 @@ exports.getTasksByProject = async (req, res) => {
   try {
     const { projectId } = req.params;
 
-    const tasks = await Task.find({ projectId }).populate('assignedTo', 'email');
+    const project = await Project.findById(projectId).select('tasks name');
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found.' });
+    }
 
-    res.status(200).json(tasks);
-  } catch (err) {
+    const tasks = await Promise.all(
+      project.tasks.map(async (taskId) => {
+        const task = await Task.findById(taskId).select('-comments').lean();
+        if (!task) return null;
+
+        const assignedTo = await Profile.findById(task.assignedTo).select('-_id email name avatar').lean();
+        return {
+          ...task,
+          assignedTo,
+        };
+      })
+    );
+
+    // Filter out any null tasks (in case of invalid task IDs)
+    const validTasks = tasks.filter((task) => task !== null);
+    const projectName = project.name;
+    
+    res.status(200).json({ projectName, validTasks });
+  } 
+  catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to fetch tasks for the project.' });
   }
 };
+
 
 exports.getTasksByUser = async (req, res) => {
   try {
@@ -92,7 +109,7 @@ exports.getTasksByUser = async (req, res) => {
 // Edit Task
 exports.editTask = async (req, res) => {
   const { taskId } = req.params;
-  const { title, description, assignedTo } = req.body;
+  const { title, description, dueDate,status, priority, assignedTo } = req.body;
 
   try {
     const task = await Task.findById(taskId);
@@ -106,6 +123,9 @@ exports.editTask = async (req, res) => {
     task.title = title || task.title;
     task.description = description || task.description;
     task.assignedTo = assignedTo || task.assignedTo;
+    task.dueDate = dueDate || task.dueDate;
+    task.priority = priority || task.priority;
+    task.status = status || task.status;
     await task.save();
 
     // If the task was reassigned to a different user
@@ -146,11 +166,11 @@ exports.deleteTask = async (req, res) => {
       return res.status(404).json({ message: 'Task not found.' });
     }
 
-    // Remove task from assigned user's assigned tasks
+
     await AssignedTask.findByIdAndUpdate(
-      task.assignedTo, // Assuming `task.assignedTo` is the _id of the AssignedTask document
+      task.assignedTo,
       { $pull: { assignTasks: taskId } },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     await Project.findByIdAndUpdate(
@@ -158,9 +178,7 @@ exports.deleteTask = async (req, res) => {
       { $pull: { tasks: taskId } },
     );
 
-    // Finally, delete the task itself
     await Task.findByIdAndDelete(taskId);
-    //await Task.deleteOne({ _id: taskId });
 
     res.status(200).json({ message: 'Task deleted successfully.' });
   }

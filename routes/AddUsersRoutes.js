@@ -7,8 +7,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 // Route to get all users
 router.get('/:projectId/get-all-users', authMiddleware, addUsers.getAllUsersFromProject);
 
-// Route to add a user to a project
-router.post('/send-project-invitation',authMiddleware, addUsers.addUserToProjectInvitation);
 // Get invitaion details and accept it 
 router.post('/get-project-details', authMiddleware, addUsers.getProjectWithUserDetails);
 router.post('/accept-invite', authMiddleware, addUsers.acceptProjectInvite);

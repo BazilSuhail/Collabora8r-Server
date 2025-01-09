@@ -3,7 +3,7 @@ const Notification = require('../models/notifications');
 exports.getNotifications = async (req, res) => {
     try {
         const userId = req.user.id; // Extract user ID from the middleware
-        console.log("id is "+userId)
+        //console.log("id is "+userId)
         const userNotifications = await Notification.findById(userId);
 
         if (!userNotifications) {
