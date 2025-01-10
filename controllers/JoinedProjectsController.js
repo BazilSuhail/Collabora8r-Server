@@ -3,36 +3,56 @@ const Profile = require('../models/profile');
 const JoinProject = require('../models/joinProjects');
 
 
-// Fetch projects joined by a user
+// Optimized fetch projects joined by a user
 exports.getJoinedProjects = async (req, res) => {
     try {
-        const userId = req.user.id; // This comes from the authenticateUser middleware 
-
-        // Fetch the profile of the logged-in user
-        /*const profile = await Profile.findById(userId).populate('joinedProjects');
-
-        if (!profile) {
-            return res.status(404).json({ error: 'Profile not found' });
-        }
-*/
-        // Fetch the JoinProject document referenced in profile.joinedProjects
-        const joinProjectDoc = await JoinProject.findById(userId);
+        const userId = req.user.id;
+        const joinProjectDoc = await JoinProject.findById(userId).select('projects');
 
         if (!joinProjectDoc) {
-            return res.status(404).json({ error: 'N sa  o joined projects found for this user.' });
+            return res.status(404).json({ error: 'No joined projects found for this user.' });
         }
 
-        // Fetch all projects using the project IDs stored in the joinProjectDoc.projects array
-        const joinedProjects = await Project.find({
-            _id: { $in: joinProjectDoc.projects }
-        }).populate('team.userId', 'name email'); // Populate team member details if needed
+        const projectIds = joinProjectDoc.projects; // Array of project ObjectIds
 
-        res.status(200).json(joinedProjects);
+        // Use Promise.all to process all projects in parallel
+        const joinedProjects = await Promise.all(
+            projectIds.map(async (projectId) => {
+                const project = await Project.findById(projectId)
+                    .select('name description createdBy projectManager theme tasks team') // Fetch only required fields
+                    .lean(); // Convert Mongoose document to plain JS object
+
+                if (!project) return null;
+
+                // Fetch the admin (createdBy) details from the Profile collection
+                const adminProfile = await Profile.findById(project.createdBy)
+                    .select('name avatar')
+                    .lean();
+
+                return {
+                    _id:project._id,
+                    name: project.name,
+                    projectManager:project.projectManager,
+                    theme: project.theme,
+                    description: project.description,
+                    createdBy: adminProfile ? { name: adminProfile.name, avatar: adminProfile.avatar } : null,
+                    taskCount: project.tasks.length,
+                    teamCount: project.team.length,
+                };
+            })
+        );
+
+        // Filter out any null projects (in case a projectId is invalid or deleted)
+        const filteredProjects = joinedProjects.filter(Boolean);
+        console.log(filteredProjects)
+        console.log('========================================================')
+        res.status(200).json(filteredProjects);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error while fetching joined projects' });
     }
 };
+
 
 exports.getProjectDetails = async (req, res) => {
     try {
@@ -57,7 +77,7 @@ exports.getProjectDetails = async (req, res) => {
         const profilePromises = project.team.map(userId =>
             Profile.findById(userId).select('name email avatar')
         );
-        
+
 
         // Resolve all promises
         const profiles = await Promise.all(profilePromises);
