@@ -26,7 +26,7 @@ exports.createTask = async (req, res) => {
     if (assignedTo) {
       let assignedTask = await AssignedTask.findById(assignedTo);
 
-      console.log(savedTask._id)
+      //console.log(savedTask._id)
       if (!assignedTask) {
         assignedTask = new AssignedTask({
           userId: assignedTo,
@@ -62,7 +62,7 @@ exports.getTasksByProject = async (req, res) => {
   try {
     const { projectId } = req.params;
 
-    const project = await Project.findById(projectId).select('tasks name');
+    const project = await Project.findById(projectId).select('tasks name team');
     if (!project) {
       return res.status(404).json({ message: 'Project not found.' });
     }
@@ -83,8 +83,9 @@ exports.getTasksByProject = async (req, res) => {
     // Filter out any null tasks (in case of invalid task IDs)
     const validTasks = tasks.filter((task) => task !== null);
     const projectName = project.name;
+    const projectTeam = project.team.length || 0;
     
-    res.status(200).json({ projectName, validTasks });
+    res.status(200).json({ projectName, validTasks,projectTeam });
   } 
   catch (err) {
     console.error(err);

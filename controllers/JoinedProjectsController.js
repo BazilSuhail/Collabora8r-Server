@@ -52,6 +52,55 @@ exports.getJoinedProjects = async (req, res) => {
     }
 };
 
+// Optimized fetch projects joined by a user
+exports.getJoinedProjectsAsManager = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const joinProjectDoc = await JoinProject.findById(userId).select('asManager');
+
+        if (!joinProjectDoc) {
+            return res.status(404).json({ error: 'No joined projects found for this user.' });
+        }
+
+        const projectIds = joinProjectDoc.asManager; // Array of project ObjectIds
+
+        // Use Promise.all to process all projects in parallel
+        const joinedProjects = await Promise.all(
+            projectIds.map(async (projectId) => {
+                const project = await Project.findById(projectId)
+                    .select('name description createdBy projectManager theme tasks team') // Fetch only required fields
+                    .lean(); // Convert Mongoose document to plain JS object
+
+                if (!project) return null;
+
+                // Fetch the admin (createdBy) details from the Profile collection
+                const adminProfile = await Profile.findById(project.createdBy)
+                    .select('name avatar')
+                    .lean();
+
+                return {
+                    _id:project._id,
+                    name: project.name,
+                    projectManager:project.projectManager,
+                    theme: project.theme,
+                    description: project.description,
+                    createdBy: adminProfile ? { name: adminProfile.name, avatar: adminProfile.avatar } : null,
+                    taskCount: project.tasks.length,
+                    teamCount: project.team.length,
+                };
+            })
+        );
+
+        // Filter out any null projects (in case a projectId is invalid or deleted)
+        const filteredProjects = joinedProjects.filter(Boolean);
+        //console.log(filteredProjects)\
+        res.status(200).json(filteredProjects);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error while fetching joined projects' });
+    }
+};
+
 exports.getProjectDetails = async (req, res) => {
     try {
         const { projectId } = req.params;

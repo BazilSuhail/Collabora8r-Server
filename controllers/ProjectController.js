@@ -96,34 +96,69 @@ exports.updateProject = async (req, res) => {
   const { name, description, projectManagerEmail, theme } = req.body;
 
   try {
+    // Find the project by ID
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found.' });
+    }
+
+    // Check if the project manager email matches the existing manager's email
+    if (project.projectManager.email !== projectManagerEmail) {
+      const user = await Profile.findOne({ email: projectManagerEmail }).select('_id');
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      const notificationDoc = await Notification.findById(user._id);
+
+      if (!notificationDoc) {
+        return res.status(404).json({ error: 'Notification document not found.' });
+      }
+
+      // Add a new notification
+      notificationDoc.notifications.push({
+        type: "projectManager",
+        data: {
+          description: `You are invited as a Project Manager, as an alternative for Project ${name}`,
+          from: req.user.id,
+          projectId: project._id,
+          createdAt: Date.now(),
+        },
+      });
+
+      // Save the notification document
+      await notificationDoc.save();
+
+      // Exit the process after sending the notification
+      return res.status(200).json({ message: 'Notification sent to the new project manager.' });
+    }
+
+    // Update the project if the manager email matches
     const updatedProject = await Project.findByIdAndUpdate(
       projectId,
       { name, description, projectManagerEmail, theme },
       { new: true }
     );
 
-    if (!updatedProject) {
-      return res.status(404).json({ error: 'Project not found.' });
-    }
-
     res.status(200).json(updatedProject);
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error updating project:', error);
     res.status(500).json({ error: 'Server error.' });
   }
 };
 
+
 exports.managerInvitation = async (req, res) => {
   const userId = req.user.id;
   const { projectId } = req.params;
   const { response } = req.body;
-
+  console.log(response)
   try {
     // Construct the update based on the response
-    const update = response === 'accept'
-      ? { 'projectManager.status': 'approved' } // Set status 
-      : { 'projectManager.email': '', 'projectManager.status': 'declined' }; 
+    const update = response === 'Accept'
+      ? { 'projectManager.status': 'Approved' } // Set status 
+      : { 'projectManager.email': '', 'projectManager.status': 'Declined' };
 
     // Update the project document
     const updatedProject = await Project.findByIdAndUpdate(
@@ -146,7 +181,7 @@ exports.managerInvitation = async (req, res) => {
       await joinProject.save();
     }
 
-    res.status(200).json({ message: 'Project invitation accepted successfully.' });
+    //res.status(200).json({ message: 'Project invitation accepted successfully.' });
 
     res.status(200).json(updatedProject);
   } catch (error) {

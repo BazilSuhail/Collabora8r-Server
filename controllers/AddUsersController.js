@@ -7,7 +7,6 @@ const Notification = require('../models/notifications')
 exports.getAllUsersFromProject = async (req, res) => {
   try {
     const { projectId } = req.params;
-    console.log(projectId)
     if (!projectId) {
       return res.status(400).json({ message: 'Project ID is required' });
     }
@@ -40,8 +39,7 @@ exports.addUserToProjectInvitation = async (req, res) => {
   const { userId, projectId } = req.body;
   //console.log(userId)
   try {
-    const notificationDoc = await Notification.findById(userId);
-    console.log(notificationDoc)
+    const notificationDoc = await Notification.findById(userId); 
     notificationDoc.notifications.push({
       type: "teamMember",
       data: {
@@ -104,7 +102,7 @@ exports.acceptProjectInvite = async (req, res) => {
     const isUserAlreadyInTeam = project.team.some((member) => member.userId === userId);
     if (!isUserAlreadyInTeam) {
       project.team.push(userId);
-      await project.save();
+      await project.save(); 
     }
 
     // Find or create the JoinProject document for the user
