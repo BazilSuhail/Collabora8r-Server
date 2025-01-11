@@ -55,6 +55,7 @@ exports.signUp = async (req, res) => {
     const joinProject = new JoinProject({
       _id: userId,
       projects: [], // Initialize with an empty project array
+      asManager: [], // Initialize with an empty project array
     });
     await joinProject.save();
 
@@ -67,7 +68,7 @@ exports.signUp = async (req, res) => {
 
     // Generate a JWT token
     const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '8h',
     });
 
     // Respond with the token

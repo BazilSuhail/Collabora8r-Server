@@ -7,7 +7,7 @@ exports.fetchAssignedTasks = async (req, res) => {
     const userId = req.params.userId; // Extract user ID from the route
 
     // Fetch the assigned tasks document for the user
-    const assignedTasksDoc = await AssignedTasks.findOne({ userId });
+    const assignedTasksDoc = await AssignedTasks.findById(userId);
     if (!assignedTasksDoc) {
       return res.status(404).json({ error: 'No assigned tasks found' });
     }

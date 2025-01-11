@@ -44,15 +44,13 @@ exports.getJoinedProjects = async (req, res) => {
 
         // Filter out any null projects (in case a projectId is invalid or deleted)
         const filteredProjects = joinedProjects.filter(Boolean);
-        console.log(filteredProjects)
-        console.log('========================================================')
+        //console.log(filteredProjects)\
         res.status(200).json(filteredProjects);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error while fetching joined projects' });
     }
 };
-
 
 exports.getProjectDetails = async (req, res) => {
     try {

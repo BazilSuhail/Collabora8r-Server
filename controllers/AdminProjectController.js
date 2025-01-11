@@ -1,8 +1,8 @@
 const Profile = require('../models/profile');
 const Project = require('../models/projects');
-const JoinProject = require('../models/joinProjects');
 const Task = require('../models/tasks');
-const AdminProject = require('../models/adminProjects');  
+const AdminProject = require('../models/adminProjects');
+const Notification = require('../models/notifications');
 
 // List all projects created by the logged-in admin
 exports.getCreatedProjects = async (req, res) => {
@@ -40,14 +40,14 @@ exports.getProjectDetails = async (req, res) => {
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
-    } 
-    
+    }
+
     const teamDetails = await Promise.all(
       project.team.map(async (member) => {
         const userProfile = await Profile.findById(member).select('name email avatar -_id');
         return userProfile || null;
       })
-    ); 
+    );
     // Filter out null entries in case a user profile is missing
     const filteredTeam = teamDetails.filter((member) => member !== null);
     const taskCount = project.tasks.length;
@@ -68,14 +68,13 @@ exports.getProjectDetails = async (req, res) => {
     };
 
     res.status(200).json(projectDetails);
-  } 
+  }
   catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 };
 
-const mongoose = require('mongoose');
 
 exports.searchUserByEmail = async (req, res) => {
   try {
@@ -89,7 +88,7 @@ exports.searchUserByEmail = async (req, res) => {
     }
 
     // Find the user by email
-    const user = await Profile.findOne({ email }).select('name email avatar');
+    const user = await Profile.findOne({ email }).select('name email avatar _id');
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
@@ -110,6 +109,7 @@ exports.searchUserByEmail = async (req, res) => {
 
     // If not, return the user details
     res.status(200).json({
+      userId: user._id,
       name: user.name,
       email: user.email,
       avatar: user.avatar,
@@ -127,20 +127,25 @@ exports.addUserToProjectInvitation = async (req, res) => {
   const { userId, projectId } = req.body;
   //console.log(userId)
   try {
+
     const notificationDoc = await Notification.findById(userId);
     console.log(notificationDoc)
+    const senderProfileDoc = await Profile.findById(senderUserId).select('name -_id');
+    const projectTitleDoc = await Project.findById(projectId).select('name -_id');
+    //console.log(notificationDoc)
     notificationDoc.notifications.push({
       type: "teamMember",
       data: {
         projectId: projectId,
         from: senderUserId,
-        description: "New project invitation",
-
+        title: "Poject invitation from " + senderProfileDoc.name,
+        description: senderProfileDoc.name + " has invited you to join his Project \"" + projectTitleDoc.name + "\"",
         createdAt: Date.now(),
       },
     });
-    await notificationDoc.save();
 
+    await notificationDoc.save();
+    
     res.status(200).json({ message: 'Invitation sent' });
   }
   catch (err) {

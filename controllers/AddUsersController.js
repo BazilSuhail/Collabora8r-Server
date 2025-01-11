@@ -64,6 +64,7 @@ exports.addUserToProjectInvitation = async (req, res) => {
 
 exports.getProjectWithUserDetails = async (req, res) => {
   const { projectId } = req.body;
+  //console.log(projectId)
 
   try {
     // Fetch the project by ID
