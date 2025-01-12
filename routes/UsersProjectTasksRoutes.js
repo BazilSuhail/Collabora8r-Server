@@ -1,12 +1,13 @@
 const express = require('express');
-const { getProjectTasks, updateTaskStatus } = require('../controllers/UsersProjectTasksController');
-const protect = require('../middleware/authMiddleware'); // Assuming you have an authentication middleware
+const { getProjectTasks, updateTaskStatus, updateTaskStatusAndProgress } = require('../controllers/UsersProjectTasksController');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.get('/:projectId', protect, getProjectTasks);
+router.get('/:projectId', authMiddleware, getProjectTasks);
 
 
 router.patch('/tasks/update', updateTaskStatus);
+router.put('/update-task-progress/:taskId', authMiddleware, updateTaskStatusAndProgress);
 
 module.exports = router;

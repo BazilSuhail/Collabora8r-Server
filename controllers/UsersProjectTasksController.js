@@ -53,16 +53,38 @@ exports.getProjectTasks = async (req, res) => {
 
 exports.updateTaskStatus = async (req, res) => {
     const { updates } = req.body; // Expecting an array of updates { id, status }
-  
+
     try {
-      const updatePromises = updates.map(({ id, status }) =>
-        Task.findByIdAndUpdate(id, { status }, { new: true }) // Update and return the new task
-      );
-  
-      const updatedTasks = await Promise.all(updatePromises);
-      res.status(200).json({ success: true, updatedTasks });
+        const updatePromises = updates.map(({ id, status }) =>
+            Task.findByIdAndUpdate(id, { status }, { new: true }) // Update and return the new task
+        );
+
+        const updatedTasks = await Promise.all(updatePromises);
+        res.status(200).json({ success: true, updatedTasks });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Error updating tasks' });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Error updating tasks' });
     }
-  };
+};
+exports.updateTaskStatusAndProgress = async (req, res) => {
+    const taskId = req.params.taskId;
+    const { progress, status } = req.body; 
+
+    try {
+        const updatedTask = await Task.findByIdAndUpdate(
+            taskId,
+            { progress, status },
+            { new: true }
+        );
+
+        if (!updatedTask) {
+            return res.status(404).json({ success: false, message: 'Task not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Task updated successfully', updatedTask });
+    } 
+    catch (error) {
+        console.error(error); 
+        res.status(500).json({ success: false, message: 'Error updating task' });
+    }
+};

@@ -4,7 +4,7 @@ const Project = require('../models/projects');
 
 exports.fetchAssignedTasks = async (req, res) => {
   try {
-    const userId = req.params.userId; // Extract user ID from the route
+    const userId = req.user.id; // Extract user ID from the route
 
     // Fetch the assigned tasks document for the user
     const assignedTasksDoc = await AssignedTasks.findById(userId);
@@ -30,7 +30,8 @@ exports.fetchAssignedTasks = async (req, res) => {
 
     // Return the tasks with project info
     res.status(200).json({ tasks: tasksWithProject });
-  } catch (error) {
+  } 
+  catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error fetching assigned tasks' });
   }

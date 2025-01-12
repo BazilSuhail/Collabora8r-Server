@@ -11,6 +11,7 @@ exports.createTask = async (req, res) => {
       description,
       status,
       priority,
+      progress: 0,
       assignedTo,
       dueDate,
       projectId
@@ -41,7 +42,7 @@ exports.createTask = async (req, res) => {
       else {
         assignedTask.assignTasks.push(savedTask._id);
         await assignedTask.save();
-        
+
         const profile = await Profile.findById(assignedTo);
         if (!profile.assignedTasks || !profile.assignedTasks.equals(assignedTask._id)) {
           await Profile.findByIdAndUpdate(assignedTo, {
@@ -84,9 +85,9 @@ exports.getTasksByProject = async (req, res) => {
     const validTasks = tasks.filter((task) => task !== null);
     const projectName = project.name;
     const projectTeam = project.team.length || 0;
-    
-    res.status(200).json({ projectName, validTasks,projectTeam });
-  } 
+
+    res.status(200).json({ projectName, validTasks, projectTeam });
+  }
   catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to fetch tasks for the project.' });
@@ -110,7 +111,7 @@ exports.getTasksByUser = async (req, res) => {
 // Edit Task
 exports.editTask = async (req, res) => {
   const { taskId } = req.params;
-  const { title, description, dueDate,status, priority, assignedTo } = req.body;
+  const { title, description, dueDate, status, priority, assignedTo } = req.body;
 
   try {
     const task = await Task.findById(taskId);

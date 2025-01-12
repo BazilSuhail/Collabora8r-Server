@@ -11,13 +11,19 @@ const taskSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Not Started', 'In Progress', 'Completed'],
+    enum: ['Not Started', 'In Progress', 'Paused','Completed'],
     default: 'Not Started'
   },
   priority: {
     type: String,
     enum: ['Low', 'Medium', 'High'],
     default: 'Medium'
+  },
+  progress: {
+    type: Number,
+    min: 0,
+    max: 100,
+    default: 0
   },
   dueDate: {
     type: Date,
