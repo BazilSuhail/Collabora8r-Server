@@ -7,7 +7,7 @@ const JoinProject = require('../models/joinProjects');
 exports.fetchAssignedTasks = async (req, res) => {
   try {
     const userId = req.user.id; // Extract user ID from the route
-
+console.log("Asd")
     // Fetch the assigned tasks document for the user
     const assignedTasksDoc = await AssignedTasks.findById(userId);
     if (!assignedTasksDoc) {
