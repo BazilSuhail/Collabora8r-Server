@@ -3,15 +3,15 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./Config/db');  
 const path = require('path');
-//const http = require('http');
-//const { initSocket } = require('./socket');
+const http = require('http');
+const { initSocket } = require('./socket');
 
 dotenv.config();
 connectDB();
 const app = express();
 
-//const server = http.createServer(app);
-//initSocket(server); 
+const server = http.createServer(app);
+initSocket(server); 
 app.use(cors());
 app.use(express.json());
 
@@ -42,5 +42,5 @@ app.use('/project-tasks', require('./routes/ProjectTasksRoutes'));
  
 
 const PORT = process.env.PORT || 3001;
-//server.listen(PORT, () => console.log(`Scoket Server running on port ${PORT}`));
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Scoket Server running on port ${PORT}`));
+//app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

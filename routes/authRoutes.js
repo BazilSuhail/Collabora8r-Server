@@ -14,9 +14,5 @@ router.post('/forgot-password', profileController.forgotPassword);
 router.post('/signin', profileController.signIn);
 
 // Get the current user's profile
-router.get('/', authMiddleware, profileController.getProfile);
-
-// Update the current user's profile
-router.put('/', authMiddleware, profileController.updateProfile);
 
 module.exports = router;

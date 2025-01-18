@@ -172,37 +172,3 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
-// Get the current user's profile
-exports.getProfile = async (req, res) => {
-  try {
-    const profile = await Profile.findById(req.user.id);
-    if (!profile) {
-      return res.status(404).json({ error: 'Profile not found' });
-    }
-    res.json(profile);
-  } catch (error) {
-    console.error('Get profile error:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
-
-exports.updateProfile = async (req, res) => {
-  try {
-    const { name, gender, phone, email, dob, avatar } = req.body; // Include avatar
-
-    const updatedProfile = await Profile.findByIdAndUpdate(
-      req.user.id,
-      { name, gender, phone, email, dob, avatar }, // Update avatar
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedProfile) {
-      return res.status(404).json({ error: 'Profile not found' });
-    }
-
-    res.json(updatedProfile);
-  } catch (error) {
-    console.error('Update profile error:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
