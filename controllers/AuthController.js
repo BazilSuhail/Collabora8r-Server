@@ -6,14 +6,12 @@ const AssignedTask = require('../models/assignTasks');
 const AdminProject = require('../models/adminProjects');
 const JoinProject = require('../models/joinProjects');
 const Notification = require('../models/notifications');
-
-// Sign Up a new user
+ 
 // Sign Up a new user
 exports.signUp = async (req, res) => {
   const { name, gender, phone, email, dob, password } = req.body;
 
-  try {
-    // Check if the user already exists
+  try { 
     let profile = await Profile.findOne({ email });
     if (profile) {
       return res.status(400).json({ error: 'User already exists' });
@@ -29,12 +27,11 @@ exports.signUp = async (req, res) => {
       phone,
       email,
       dob,
-      password: hashedPassword, // Store the hashed password
+      password: hashedPassword, 
     });
 
     await profile.save();
-
-    // Use the same _id from Profile to create documents in the other collections
+ 
     const userId = profile._id;
 
     // Create AssignedTask document
@@ -47,22 +44,22 @@ exports.signUp = async (req, res) => {
     // Create AdminProject document
     const adminProject = new AdminProject({
       _id: userId,
-      projects: [], // Initialize with an empty project array
+      projects: [],  
     });
     await adminProject.save();
 
     // Create JoinProject document
     const joinProject = new JoinProject({
       _id: userId,
-      projects: [], // Initialize with an empty project array
-      asManager: [], // Initialize with an empty project array
+      projects: [],  
+      asManager: [],  
     });
     await joinProject.save();
 
     // Create Notification document
     const notification = new Notification({
       _id: userId,
-      notifications: [], // Initialize with an empty notifications array
+      notifications: [],  
     });
     await notification.save();
 
@@ -74,7 +71,7 @@ exports.signUp = async (req, res) => {
     // Respond with the token
     res.status(201).json({ token });
   } catch (error) {
-    console.error(error); // Log the error for debugging
+    console.error(error);  
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -98,10 +95,9 @@ exports.signIn = async (req, res) => {
     }
 
     const token = jwt.sign({ id: profile._id }, process.env.JWT_SECRET, {
-      expiresIn: '8h'
+      expiresIn: '22h'
     });
-
-
+ 
     res.json({ token });
   } catch (error) {
     console.error('Sign-in error:', error);

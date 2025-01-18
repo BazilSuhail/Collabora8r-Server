@@ -36,7 +36,7 @@ const taskSchema = new mongoose.Schema({
   },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Profile' // Reference to the Profile document
+    ref: 'Profile'  
   },
   createdAt: {
     type: Date,
@@ -48,12 +48,11 @@ const taskSchema = new mongoose.Schema({
   },
   comments: [
     {
-      type: String, // Store comment IDs as strings
+      type: String,  
     },
   ],
 });
 
-// Middleware to update `updatedAt` before save
 taskSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();

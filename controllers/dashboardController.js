@@ -6,9 +6,8 @@ const JoinProject = require('../models/joinProjects');
 
 exports.fetchAssignedTasks = async (req, res) => {
   try {
-    const userId = req.user.id; // Extract user ID from the route
-console.log("Asd")
-    // Fetch the assigned tasks document for the user
+    const userId = req.user.id;
+
     const assignedTasksDoc = await AssignedTasks.findById(userId);
     if (!assignedTasksDoc) {
       return res.status(404).json({ error: 'No assigned tasks found' });
@@ -41,9 +40,8 @@ console.log("Asd")
 
 exports.fetchProgressOverview = async (req, res) => {
   try {
-    const userId = req.user.id; // Extract user ID from the route
-
-    // Fetch the assigned tasks document for the user
+    const userId = req.user.id; 
+    
     const assignedTasksDoc = await AssignedTasks.findById(userId);
     if (!assignedTasksDoc) {
       return res.status(404).json({ error: 'No assigned tasks found' });
@@ -58,8 +56,7 @@ exports.fetchProgressOverview = async (req, res) => {
     if (!assignedTasksDoc) {
       return res.status(404).json({ error: 'No assigned tasks found' });
     }
-
-
+ 
     const taskIds = assignedTasksDoc.assignTasks;
 
     // Fetch all tasks using Promise.all and map with findById
@@ -69,14 +66,12 @@ exports.fetchProgressOverview = async (req, res) => {
         return task; // Return only title and progress
       })
     );
-const projectCounts = {
-  adminProjectsCount: adminProjects.projects.length,
-  joinedProjectsCount: joinedProjects.projects.length,
-  managerProjectCount: joinedProjects.asManager.length,
-}
-//console.log(projectCounts)
-console.log(tasks)
-    // Return the tasks with the selected fields
+    const projectCounts = {
+      adminProjectsCount: adminProjects.projects.length,
+      joinedProjectsCount: joinedProjects.projects.length,
+      managerProjectCount: joinedProjects.asManager.length,
+    } 
+    
     res.status(200).json({
       projectCounts,
       tasks

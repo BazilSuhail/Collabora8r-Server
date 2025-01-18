@@ -11,12 +11,12 @@ const commentSchema = new mongoose.Schema({
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Profile', // Reference to the Profile document
+    ref: 'Profile',  
     required: true,
   },
   taskId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Task', // Reference to the Task document
+    ref: 'Task', 
     required: true,
   },
 });

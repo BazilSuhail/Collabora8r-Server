@@ -10,7 +10,7 @@ const projectSchema = new mongoose.Schema({
     required: true
   },
   theme: {
-    type: String, 
+    type: String,
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -23,12 +23,12 @@ const projectSchema = new mongoose.Schema({
       ref: 'Profile'
     },
     email: {
-      type: String, // Store the email initially
+      type: String,
       required: true
     },
     status: {
       type: String,
-      enum: ['Pending', 'Approved', 'Rejected'], // Status of the project manager
+      enum: ['Pending', 'Approved', 'Rejected'],
       default: 'Pending'
     }
   },

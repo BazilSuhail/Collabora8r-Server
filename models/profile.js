@@ -29,7 +29,7 @@ const profileSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    default: "1" // This sets the default value to "1" at the time of creation
+    default: "1"  
   },
   adminProjects: {
     type: mongoose.Schema.Types.ObjectId,
