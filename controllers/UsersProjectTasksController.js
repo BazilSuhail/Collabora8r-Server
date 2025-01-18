@@ -66,6 +66,7 @@ exports.updateTaskStatus = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error updating tasks' });
     }
 };
+
 exports.updateTaskStatusAndProgress = async (req, res) => {
     const taskId = req.params.taskId;
     const { progress, status } = req.body; 

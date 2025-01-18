@@ -3,6 +3,7 @@ const Project = require('../models/projects');
 const AdminProject = require('../models/adminProjects');
 const JoinProject = require('../models/joinProjects');
 const Notification = require('../models/notifications');
+const { sendMessageToUser } = require('../socket');
 
 // Create a new project
 exports.createProject = async (req, res) => {
@@ -37,40 +38,30 @@ exports.createProject = async (req, res) => {
 
     const projectManagerProfile = await Profile.findOne({ email: projectManagerEmail });
     if (projectManagerProfile) {
+      const managerId = projectManagerProfile._id;
       projectManager.status = 'Pending';
 
       const notificationDoc = await Notification.findById(projectManagerProfile._id);
+      const managerMessage = {
+        type: "projectManager",
+        data: {
+          description: `You have been assigned as a project manager from ${projectManagerProfile.name} for his Project ${name}`,
+          from: createdBy,
+          projectId: newProject._id,
+          createdAt: Date.now(),
+        },
+      };
 
       // If notification document exists, add the notification
       if (notificationDoc) {
-        notificationDoc.notifications.push({
-          type: "projectManager",
-          data: {
-            description: `You have been assigned as a project manager from ${projectManagerProfile.name} for his Project ${name}`,
-            from: createdBy,
-            projectId: newProject._id,
-            createdAt: Date.now(),
-          },
-        });
+        notificationDoc.notifications.push(managerMessage);
         await notificationDoc.save();
+        sendMessageToUser(projectManagerProfile._id.toString(), managerMessage);
       }
       else {
-        const newNotification = new Notification({
-          _id: projectManagerProfile._id,
-          notifications: [
-            {
-              type: "projectManager",
-              data: {
-                description: `You have been invited for a Project Manager role for ${name}`,
-                from: createdBy,
-                projectId: newProject._id,
-                createdAt: Date.now(),
-              },
-            }
-          ],
-        });
-
+        const newNotification = new Notification(managerMessage);
         await newNotification.save();
+        sendMessageToUser(projectManagerProfile._id.toString(), managerMessage);
       }
       projectManager.id = projectManagerProfile._id;
     }

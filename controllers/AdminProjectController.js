@@ -3,6 +3,7 @@ const Project = require('../models/projects');
 const Task = require('../models/tasks');
 const AdminProject = require('../models/adminProjects');
 const Notification = require('../models/notifications');
+const { sendMessageToUser } = require('../socket')
 
 // List all projects created by the logged-in admin
 exports.getCreatedProjects = async (req, res) => {
@@ -121,7 +122,7 @@ exports.searchUserByEmail = async (req, res) => {
 };
 
 
-exports.addUserToProjectInvitation = async (req, res) => {
+exports.addMemberToTeam = async (req, res) => {
   //const { projectId } = req.params;
   const senderUserId = req.user.id;
   const { userId, projectId } = req.body;
@@ -129,11 +130,21 @@ exports.addUserToProjectInvitation = async (req, res) => {
   try {
 
     const notificationDoc = await Notification.findById(userId);
-    console.log(notificationDoc)
+    //console.log(notificationDoc)
     const senderProfileDoc = await Profile.findById(senderUserId).select('name -_id');
     const projectTitleDoc = await Project.findById(projectId).select('name -_id');
-    //console.log(notificationDoc)
+
     notificationDoc.notifications.push({
+      type: "teamMember",
+      data: {
+        projectId: projectId,
+        from: senderUserId,
+        title: "Poject invitation from " + senderProfileDoc.name,
+        description: senderProfileDoc.name + " has invited you to join his Project \"" + projectTitleDoc.name + "\"",
+        createdAt: Date.now(),
+      },
+    });
+    sendMessageToUser(userId, {
       type: "teamMember",
       data: {
         projectId: projectId,
@@ -145,7 +156,7 @@ exports.addUserToProjectInvitation = async (req, res) => {
     });
 
     await notificationDoc.save();
-    
+
     res.status(200).json({ message: 'Invitation sent' });
   }
   catch (err) {

@@ -12,6 +12,7 @@ const app = express();
 
 const server = http.createServer(app);
 initSocket(server); 
+
 app.use(cors());
 app.use(express.json());
 

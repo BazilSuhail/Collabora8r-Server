@@ -25,7 +25,7 @@ const initSocket = (server) => {
       for (const [key, value] of connectedUsers.entries()) {
         if (value === socket.id) {
           connectedUsers.delete(key);
-          console.log(`User disconnected: ${key}`);
+          //console.log(`User disconnected: ${key}`);
           break;
         }
       }
@@ -42,6 +42,7 @@ const getIo = () => {
 };
 
 const sendMessageToUser = (userId, message) => {
+ //console.log(userId) 
   const socketId = connectedUsers.get(userId);
   
   //console.log("Connected Users:", Array.from(connectedUsers.entries()));

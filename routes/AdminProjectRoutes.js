@@ -12,6 +12,6 @@ router.post('/get-searched-user', authenticateUser, projectController.searchUser
 
 
 // Route to add a user to a project
-router.post('/send-project-invitation',authenticateUser, projectController.addUserToProjectInvitation);
+router.post('/send-project-invitation',authenticateUser, projectController.addMemberToTeam);
 
 module.exports = router;
