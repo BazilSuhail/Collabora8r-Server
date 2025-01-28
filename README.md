@@ -1,27 +1,32 @@
-# Collabor8r (Project Management Tool)
-Application `Collabor8r` is an intuitive and robust project management tool designed to streamline team collaboration, task management, and project tracking. With a focus on enhancing productivity, Collabor8r provides advanced features and interactive elements to ensure efficient project execution.
+## Collabora8r's Server
+`Collabora8r` a project collaboration and managment tool built using MERN stack aimed to enhance team collaboration, streamline task management, improved workflow and seamless communications resulting in  improved productivity. This is the Server Side of **collabora8r** built using `express-js`, `mongoDb` as a database `jwt-auth` for authentication of users and `socket-io` for real time exchange of notification and project updates.
 
-## 🤖 Tech Stack 
+<br/>
+
+### Project Description
+`Collabor8r` is a **MERN stack** based project management tool designed to streamline team collaboration, task management, and project tracking. With real-time notifications powered by `Socket.IO`, it ensures seamless communication, instant updates, and enhanced productivity for teams of all sizes. Keep your projects on track with intuitive workflows and advanced features.
+
+### 🤖 Tech Stack 
  <a href="#"> 
-  <img alt="JavaScript" src="https://img.shields.io/badge/javascript%20-%23323330.svg?&style=for-the-badge&logo=javascript&logoColor=%23F7DF1E"/>  
-  <img alt="React" src="https://img.shields.io/badge/React-%2361DAFB.svg?&style=for-the-badge&logo=react&logoColor=white"/> 
-  <img alt="Framer Motion" src="https://img.shields.io/badge/Framer%20Motion-%23ED5A9F.svg?&style=for-the-badge&logo=framer&logoColor=white"/>
-  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind%20CSS-%2306B6D4.svg?&style=for-the-badge&logo=tailwindcss&logoColor=white"/>
+  <img alt="JavaScript" src="https://img.shields.io/badge/javascript%20-%23323330.svg?&style=for-the-badge&logo=javascript&logoColor=%23F7DF1E"/>   
 <img alt="Node js" src="https://img.shields.io/badge/Node.js-%23339933.svg?&style=for-the-badge&logo=node.js&logoColor=white"/> 
 <img alt="Express js" src="https://img.shields.io/badge/Express.js-%23000000.svg?&style=for-the-badge&logo=express&logoColor=white"/>   
 <img alt="MongoDB" src ="https://img.shields.io/badge/MongoDB-%234ea94b.svg?&style=for-the-badge&logo=mongodb&logoColor=white"/> 
+<img alt="Socket.IO" src="https://img.shields.io/badge/Socket.IO%20-%23010101.svg?&style=for-the-badge&logo=socket.io&logoColor=white"/>
  </a>
 
-#### Check out the latest demo of Project [Collabor8r-Site](https://collabora8r.vercel.app/). 
-#### Find the Server Repository of this Project Here [Collabor8r-Server](https://github.com/BazilSuhail/Collabor8r-Server). 
-## Run Locally
+##### Check out the latest demo of Project [Collabor8r-Site](https://collabora8r.vercel.app/). 
+
+##### Find the Server Repository of this Project Here [Collabor8r-Server](https://github.com/BazilSuhail/Collabor8r-Client). 
+
+### Run Locally
 Clone the project using the following command:
 ```bash
-   git clone https://github.com/BazilSuhail/Collabor8r.git
+   git clone https://github.com/BazilSuhail/Collabor8r-Server.git
 ```
 Go to the project directory
 ```bash
-   cd collabor8r
+   cd Collabor8r-Server
 ```
 Then **Run** this command in your terminal to install all required dependancies:
 ```bash
@@ -31,24 +36,31 @@ In the project directory, you can run:
 ```bash
    npm start
 ``` 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-## Features
+Runs the app in the development mode.
+Open [http://localhost:3001](http://localhost:3001) to view it in your browser.
 
+## Features
 ### Task Management
 - **Task Creation**: Create tasks with detailed descriptions, deadlines, and priority levels.
 - **Task Assignment**: Assign tasks to specific team members, track progress, and set due dates.
 - **Task Status Updates**: Real-time updates on task status (e.g., In Progress, Completed) with visual indicators.
 
+
+### Real Time Notifications
+- **Project Invitations**: Real-time notifications for team members when invited to join a project.
+
+- **Manager Invitations**: Instant updates for managers when assigned to oversee a project.
+
+- **Invitation Status**: Live tracking of invitation acceptance or rejection status.
+
 ### Team Collaboration
-- **Discussion Boards**: Engage in team discussions for each project, share ideas, and resolve issues.
-- **File Sharing**: Upload and share files related to tasks and projects within the team.
-- **Real-time Notifications**: Receive real-time notifications for task updates, new comments, and project milestones.
+- **Discussion Boards**: Engage in team discussions for each project, share ideas, and resolve issues via comments in a particular task. 
+- **Real-time Notifications**: Receive real-time notifications for team/ project invitation or a Project Manager Role.
 
 ### Project Timelines
 - **Gantt Charts**: Visualize project timelines with interactive Gantt charts.
-- **Milestone Tracking**: Set and track milestones to ensure projects stay on schedule.
-- **Progress Reporting**: Generate and view progress reports for individual tasks and overall projects.
+- **Milestone Tracking**: Set and track progress to ensure projects stay on schedule.
+- **Progress Reporting**: View progress against individual tasks.
 
 ### User Profile Management
 - **View and Edit Profile**: Users can view and update their profile information, including full name, email, and role within the team.
@@ -63,5 +75,5 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 - **Data Encryption**: All sensitive data is encrypted to protect against unauthorized access.
 
 
-# Live Demo
-## Check out the latest demo of Project [Texleath](https://collabor8r.netlify.app). 
+### Live Demo
+Check out the latest demo of Project [Collabora8r](https://collabor8r.netlify.app). 
