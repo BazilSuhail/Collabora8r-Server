@@ -17,20 +17,19 @@
 
 </br>
 
-##### Check out the latest demo of Project [Collabor8r-Site](https://collabora8r.vercel.app/). 
-
-##### Find the Server Repository of this Project Here [Collabor8r-Server](https://github.com/BazilSuhail/Collabora8r-Client). 
+- Check out the latest demo of Project [Collabor8r-Site](https://collabora8r.vercel.app/). 
+- Find the Server Repository of this Project Here [Collabor8r-Server](https://github.com/BazilSuhail/Collabora8r-Server). 
 
 </br>
 
 ### Run Locally
 Clone the project using the following command:
 ```bash
-   git clone https://github.com/BazilSuhail/Collabora8r-Server.git
+   git clone https://github.com/BazilSuhail/Collabora8r-Client.git
 ```
 Go to the project directory
 ```bash
-   cd Collabor8r-Server
+   cd Collabor8r-Client
 ```
 Then **Run** this command in your terminal to install all required dependancies:
 ```bash
