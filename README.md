@@ -15,14 +15,18 @@
 <img alt="Socket.IO" src="https://img.shields.io/badge/Socket.IO%20-%23010101.svg?&style=for-the-badge&logo=socket.io&logoColor=white"/>
  </a>
 
+</br>
+
 ##### Check out the latest demo of Project [Collabor8r-Site](https://collabora8r.vercel.app/). 
 
-##### Find the Server Repository of this Project Here [Collabor8r-Server](https://github.com/BazilSuhail/Collabor8r-Client). 
+##### Find the Server Repository of this Project Here [Collabor8r-Server](https://github.com/BazilSuhail/Collabora8r-Client). 
+
+</br>
 
 ### Run Locally
 Clone the project using the following command:
 ```bash
-   git clone https://github.com/BazilSuhail/Collabor8r-Server.git
+   git clone https://github.com/BazilSuhail/Collabora8r-Server.git
 ```
 Go to the project directory
 ```bash
