@@ -19,6 +19,7 @@ app.use(express.json());
 // Serve static files from the 'uploads' directory
  
 app.use('/overview', require('./routes/DashboardRoutes'));
+
 app.use('/profile', require('./routes/ProfileRoutes'));
 
 app.use('/auth', require('./routes/AuthRoutes'));
