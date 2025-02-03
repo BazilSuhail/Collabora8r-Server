@@ -43,5 +43,5 @@ app.use('/project-tasks', require('./routes/ProjectTasksRoutes'));
  
 
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => console.log(`Scoket Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Socket Server running on port ${PORT}`));
 //app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
