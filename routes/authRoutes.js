@@ -1,7 +1,7 @@
 // routes/profileRoutes.js
 const express = require('express');
 const router = express.Router();
-const profileController = require('../controllers/AuthController');
+const profileController = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Sign Up a new user

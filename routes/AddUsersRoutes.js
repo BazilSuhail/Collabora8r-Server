@@ -1,7 +1,7 @@
 // routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
-const addUsers = require('../controllers/AddUsersController');
+const addUsers = require('../controllers/addUsersController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Route to get all users

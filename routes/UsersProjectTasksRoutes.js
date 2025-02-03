@@ -1,5 +1,5 @@
 const express = require('express');
-const { getProjectTasks, updateTaskStatus, updateTaskStatusAndProgress } = require('../controllers/UsersProjectTasksController');
+const { getProjectTasks, updateTaskStatus, updateTaskStatusAndProgress } = require('../controllers/usersProjectTasksController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();

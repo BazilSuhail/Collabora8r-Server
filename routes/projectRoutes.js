@@ -1,7 +1,7 @@
 // routes/projectRoutes.js
 const express = require('express');
 const router = express.Router();
-const projectController = require('../controllers/ProjectController');
+const projectController = require('../controllers/projectController');
 const authenticateUser  = require('../middleware/authMiddleware');
 
 // Route to create a new project (only accessible to authenticated users)

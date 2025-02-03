@@ -22,9 +22,9 @@ app.use('/overview', require('./routes/dashboardRoutes'));
 
 app.use('/profile', require('./routes/profileRoutes'));
 
-app.use('/auth', require('./routes/AuthRoutes'));
+app.use('/auth', require('./routes/authRoutes'));
 
-app.use('/admin-projects', require('./routes/AdminProjectRoutes'));
+app.use('/admin-projects', require('./routes/adminProjectRoutes'));
 
 app.use('/manageusers', require('./routes/addUsersRoutes'));
 

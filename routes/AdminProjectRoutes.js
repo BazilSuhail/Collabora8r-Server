@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const projectController = require('../controllers/AdminProjectController');
+const projectController = require('../controllers/adminProjectController');
 const authenticateUser = require('../middleware/authMiddleware');
 
 // Route to get all projects created by the logged-in admin

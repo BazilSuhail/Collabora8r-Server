@@ -1,5 +1,5 @@
 const express = require('express');
-const { addCommentToTask, getCommentsForTask, editComment, deleteComment, getProjectCreatorName } = require('../controllers/CommentsController');
+const { addCommentToTask, getCommentsForTask, editComment, deleteComment, getProjectCreatorName } = require('../controllers/commentsController');
 const router = express.Router();
 const authenticateUser = require('../middleware/authMiddleware');
 
